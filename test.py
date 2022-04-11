@@ -1,4 +1,5 @@
 import pygame
+import os
 from pygame.locals import*
 import time
 
@@ -18,12 +19,12 @@ surface = pygame.display.set_mode((500,700))
 surface.fill((255,255,255))
 pygame.draw.rect(surface, (0,0,0),pygame.Rect(100,0,305,625),2)
 pygame.display.flip()
-block1 = pygame.image.load("shape1.png")
-block2 = pygame.image.load("shape2.png")
-block3 = pygame.image.load("shape3.png")
-block4 = pygame.image.load("shape4.png")
-block5 = pygame.image.load("shape5.png")
-block6 = pygame.image.load("shape6.png")
+block1 = pygame.image.load(os.getcwd()+"/ExtendedEssayProject/shape1.png")
+block2 = pygame.image.load(os.getcwd()+"/ExtendedEssayProject/shape2.png")
+block3 = pygame.image.load(os.getcwd()+"/ExtendedEssayProject/shape3.png")
+block4 = pygame.image.load(os.getcwd()+"/ExtendedEssayProject/shape4.png")
+block5 = pygame.image.load(os.getcwd()+"/ExtendedEssayProject/shape5.png")
+block6 = pygame.image.load(os.getcwd()+"/ExtendedEssayProject/shape6.png")
 posrotate = 180
 block12 = pygame.transform.rotate(block5, posrotate)
 posx = 160
