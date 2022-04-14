@@ -1,17 +1,19 @@
 import pygame
 from pygame.locals import *
 import random
+import time
 
 clock = pygame.time.Clock()
 pygame.init()
-font1 = pygame.font.SysFont(pygame.font.get_default_font(), 80)
+font1 = pygame.font.SysFont(pygame.font.get_default_font(), 70)
+font2 = pygame.font.SysFont(pygame.font.get_default_font(), 25)
 
 class Apple:
     def __init__(self,parent_screen):
         self.image = pygame.image.load("resources/Apple.png").convert()
         self.parent_screen = parent_screen
-        self.x = 200
-        self.y = 500
+        self.x = 600
+        self.y = 450
     def randompos(self):
         self.x = random.randint(1,16)*50
         self.y = random.randint(1,14)*50
@@ -41,22 +43,42 @@ class Border:
             self.bordery[m]=50*(m-(2*self.lengthx+self.lengthy))
             self.borderx[m] = 850
             self.border = pygame.draw.rect(self.parent_screen,(0,0,0),pygame.Rect((self.borderx[m]),(self.bordery[m]), 50,50))
-        
+class Grid:
+    def __init__(self,parent_screen):
+        self.parent_screen = parent_screen
+        self.lengthx = 17
+        self.lengthy = 15
+        self.borderx = [50]*255
+        self.bordery = [50]*255
+        self.count = 0
+    def draw(self):
+        for i in range (self.lengthy):
+            for k in range (self.lengthx):
+                self.bordery[self.count]= 50*i
+                self.borderx[self.count]= 50*k
+                self.grid = pygame.draw.rect(self.parent_screen,(0,0,0),pygame.Rect((self.borderx[self.count]),(self.bordery[self.count]), 50,50),1)
+
 class Snake: 
     def __init__ (self,parent_screen,length):
 
         self.length = length
         self.parent_screen = parent_screen
-        self.block_x = [150,100,50,0]
+        self.block_x = [200,150,100,50]
         self.block_y = [450]*self.length
         self.x_direction = 1
         self.apple = Apple(self.parent_screen)
         self.y_direction = 0
         self.border = Border(self.parent_screen)
+        self.grid = Grid(self.parent_screen)
+   
     def draw (self):
         self.parent_screen.fill((26, 201, 29))
         self.apple.draw()
         self.border.draw()
+        self.grid.draw()
+        img = font1.render(('Score : '+ str(self.length-4)), True, (255,255,255))
+        img_rect = img.get_rect(center=(150, 25))
+        self.parent_screen.blit(img, img_rect)    
         
         for i in range (self.length):
             self.block = pygame.draw.rect(self.parent_screen,(255,0,0),pygame.Rect((self.block_x[i]),(self.block_y[i]), 50,50))
@@ -78,10 +100,11 @@ class Snake:
         self.x_direction = 0
         self.y_direction = 1
         ##self.draw()
-    def walk(self):
+    def walk(self,):
         for i in range (self.length-1,0,-1):
             self.block_x[i] = self.block_x[(i-1)]
             self.block_y[i] = self.block_y[(i-1)]
+
 
         
         self.block_x[0] = self.block_x[0] + ((50*self.x_direction))
@@ -89,6 +112,9 @@ class Snake:
         self.draw()
     def increase(self):
         self.apple.randompos()
+        for i in range (self.length):
+            if self.apple.x == self.block_x[i]and self.apple.y == self.block_y:
+                self.apple.randompos()
         self.length +=1
         self.block_x.append(-50)
         self.block_y.append(-50)
@@ -109,12 +135,12 @@ class Game:
         self.snake.draw()
         self.alive = True
         self.dead = False
-
     def is_collision(self,x1,y1,x2,y2):
         if x1==x2:
             if y1==y2:
                 return True
         return False
+ 
     def play(self):
         self.snake.walk()
         if self.is_collision(self.snake.block_x[0],self.snake.block_y[0],self.snake.apple.x,self.snake.apple.y):
@@ -131,6 +157,7 @@ class Game:
 
     def run(self):
         self.running = True
+        last_time = time.time()
         while self.running:
             if self.alive:
                 for event in pygame.event.get():
@@ -148,7 +175,7 @@ class Game:
                     elif event.type == QUIT:
                         self.running = False
                 self.play()
-                self.dt = clock.tick(12)
+                self.dt = clock.tick(10.5)
             elif self.dead:
                 self.surface.fill((0, 0, 0))   
                 img = font1.render('You Lost! Press enter to try again!', True, (255,0,0))
